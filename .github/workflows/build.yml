@@ -52,6 +52,21 @@ jobs:
           Copy -Force ModApiUpdate.zip Updater\ModApi.Updater\Resources\ModApiUpdate.zip
 
           msbuild Updater /p:Configuration=Release
+      - name: Generate update.info
+        run: |
+          $updaterVersion = "1.0.0.0"
+          $version = (($env:GIT_REVISION -split '\.')[0] -split 'v')[1] + "." `
+                      + (($env:GIT_REVISION -split '\.')[1]) + "." `
+                      + (($env:GIT_REVISION -split '\.')[2] -split '-')[0] + ".0"
+          $downloadUrl = $env:GITHUB_SERVER_URL + "/" + $env:GITHUB_REPOSITORY `
+                          + "/releases/latest/download/ModAPIUpdateSetup.exe"
+
+          echo $updaterVersion > update.info
+          echo $version >> update.info
+          echo "false" >> update.info
+          echo $downloadUrl >> update.info
+
+          Copy update.info Updater/ModApi.Updater/bin/Release/update.info
       - name: Upload ModApi.InterimSetup
         uses: actions/upload-artifact@v4
         with:
@@ -61,6 +76,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ModApi.Updater-${{ env.GIT_REVISION }}
-          path: Updater/ModApi.Updater/bin/Release/*.exe
+          path: |
+            Updater/ModApi.Updater/bin/Release/*.exe
+            Updater/ModApi.Updater/bin/Release/update.info
 
 
