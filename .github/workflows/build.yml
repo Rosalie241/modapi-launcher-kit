@@ -79,5 +79,33 @@ jobs:
           path: |
             Updater/ModApi.Updater/bin/Release/*.exe
             Updater/ModApi.Updater/bin/Release/update.info
-
+  create-draft-release:
+    runs-on: ubuntu-22.04
+    needs: [ build ]
+    if: github.ref_type == 'tag'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prepare Environment
+        run: |
+          echo "GIT_REVISION=$(git describe --tags --always)" >> $GITHUB_ENV
+      - name: Download ModApi.InterimSetup
+        uses: actions/download-artifact@v4
+        with:
+          name: ModApi.InterimSetup-${{ env.GIT_REVISION }}
+          path: artifact
+      - name: Download ModApi.Updater
+        uses: actions/download-artifact@v4
+        with:
+          name: ModApi.Updater-${{ env.GIT_REVISION }}
+          path: artifact
+      - name: Create Draft Release
+        uses: ncipollo/release-action@v1
+        with:
+          draft: true
+          makeLatest: true
+          tag: ${{ env.GIT_REVISION }}
+          artifacts: |
+            artifact/*
 
