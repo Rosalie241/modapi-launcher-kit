@@ -31,7 +31,7 @@ namespace ModApi.Updater
             }
 
             string path = args[1];
-
+            string exePath = Path.Combine(path, "Spore ModAPI Launcher.exe");
             bool foundLauncher = File.Exists(Path.Combine(path, "Spore ModAPI Launcher.exe"));
             if (foundLauncher)
             {
@@ -67,7 +67,7 @@ namespace ModApi.Updater
             else
             {
                 Hide();
-                MessageBox.Show("No Spore ModAPI Launcher Kit could be found in the following directory:\n" + path);
+                MessageBox.Show("No Spore ModAPI Launcher Kit could be found in the following directory:\n" + path + "\n" + exePath);
                 Close();
             }
         }
